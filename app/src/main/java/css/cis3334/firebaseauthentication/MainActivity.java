@@ -72,72 +72,77 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+    /*
+     * Sets the current user variable to check if someone is already authenticated. Sets the status to signed in/signed out.
+     */
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
         if (currentUser != null) {
             // User is signed in
-            Log.d("CIS3334", "onAuthStateChanged:signed_in:" + currentUser.getUid());
-            Toast.makeText(MainActivity.this, "User Signed In", Toast.LENGTH_LONG).show();
             textViewStatus.setText("Signed In");
         } else {
             // User is signed out
-            Log.d("CIS3334", "onAuthStateChanged:signed_out");
-            Toast.makeText(MainActivity.this, "User Signed Out", Toast.LENGTH_LONG).show();
             textViewStatus.setText("Signed Out");
         }
     }
-
+    /*
+     * Calls the createUserWithEmailAndPassword method on the FirebaseAuth instance. If successful, set the current user.
+     * If unsuccessful, log the exception.
+     */
     private void createAccount(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("CIS3334", "createUserWithEmail:success");
+                        // User is signed in
                         FirebaseUser user = mAuth.getCurrentUser();
-                        //updateUI(user);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("CIS3334", "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(MainActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-                        //updateUI(null);
-                    }
-                    
-                }
-            });
-    }
-
-    private void signIn(String email, String password){
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("CIS3334", "signInWithEmail:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
+                        // Set status to signed in
                         textViewStatus.setText("Signed In");
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("CIS3334", "signInWithEmail:failure", task.getException());
-                        Toast.makeText(MainActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
+                        // If sign in fails, log the exception.
+                        Log.w("CIS3334", "createUserWithEmail:failure", task.getException());
+                        // Set status to signed out on failure.
                         textViewStatus.setText("Signed Out");
                     }
 
                 }
             });
     }
+    /*
+     * Call the signInWithEmailAndPassword method on the FirebaseAuth instance. If successful, set the current user.
+     * If unsuccessful, log the exception and display and error message.
+     */
+    private void signIn(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        // User is signed in
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        // Set status to signed in
+                        textViewStatus.setText("Signed In");
+                    } else {
+                        // If sign in fails, log the exception.
+                        Log.w("CIS3334", "signInWithEmail:failure", task.getException());
+                        // Set status to signed out on failure.
+                        textViewStatus.setText("Signed Out");
+                    }
 
+                }
+            });
+    }
+    /*
+     * Sign out the currently logged in user.
+     */
     private void signOut () {
+        // Sign out of FirebaseAuth.
         mAuth.signOut();
+        //Set status to signed out.
         textViewStatus.setText("Signed Out");
     }
 
